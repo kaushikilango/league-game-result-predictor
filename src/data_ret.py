@@ -17,8 +17,8 @@ def get_account_info(summoner_name, server, api_key):
     puuid = account_info['puuid']
     return account_id, puuid
 
-def get_match_list(puuid, shard, api_key):
-    match_list_link = 'https://' + shard + '.api.riotgames.com/lol/match/v5/matches/by-puuid/'+ puuid + '/ids' +'?type=ranked' + '&api_key=' + api_key + '&count=100' + '&queue=' + str(queue_id)
+def get_match_list(puuid, shard, api_key,queue_id=queue_id,count = 100):
+    match_list_link = 'https://' + shard + '.api.riotgames.com/lol/match/v5/matches/by-puuid/'+ puuid + '/ids' + '?api_key=' + api_key + '&count='+str(count) + '&queue=' + str(queue_id)
     match_list = rq.get(match_list_link).json()
     return match_list
 
@@ -38,6 +38,15 @@ def get_participants_details(match_details, puuid):
 
 puuid = get_account_info(summoner_name, server, api_key)[1]
 matches = get_match_list(puuid, shard, api_key)
+print(matches)
+if len(matches) < 100:
+    print('Not enough matches to analyze')
+    print('Executing retrieval of match list again but using the normal draft games as difference')
+    matches = matches + get_match_list(puuid, shard, api_key, queue_id=400,count = 100 - len(matches))
+    if len(matches) < 100:
+        print('Not enough matches to analyze')
+    print('Executing retrieval of match list again but using the normal blind games as difference')
+    matches = matches + get_match_list(puuid, shard, api_key, queue_id=430,count = 100 - len(matches))   
 keys = ['assists','championId','champExperience','deaths','firstTowerKill','inhibitorKills','kills','lane',
         'longestTimeSpentLiving','turretsLost','turretKills','win']
 challenges = ['acesBefore15Minutes', 'bountyGold', 'damagePerMinute', 'firstTurretKilled', 'gameLength', 'kda', 'killParticipation','maxCsAdvantageOnLaneOpponent', 'maxKillDeficit', 'multikills', 'soloKills', 'takedowns', 'teamBaronKills','turretPlatesTaken','turretTakedowns']
