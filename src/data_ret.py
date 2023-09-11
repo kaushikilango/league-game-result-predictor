@@ -1,8 +1,8 @@
 import requests as rq
 from tqdm import tqdm
 import pandas as pd
-
-api_key = 'RGAPI-93292044-0328-4ca9-ba0e-e71230b871d1'
+from score_calculator import calculate_game_scores
+api_key = 'RGAPI-5b57ebaf-54c6-4816-8c2c-7cf91eb6f345'
 server = 'na1'
 shard = 'americas'
 summoner_name = 'miman'
@@ -34,12 +34,14 @@ def get_participants_details(match_details, puuid):
 
     player_team = player_stats['teamId']
     team_win = player_stats['win']
-    return player_stats
+    return player_stats,player_chr
 
-puuid = get_account_info(summoner_name, server, api_key)[1]
-matches = get_match_list(puuid, shard, api_key)
+puuid = get_account_info(summoner_name, server, api_key)[1]  ## this will get the puuid of the summoner
+matches = get_match_list(puuid, shard, api_key)   ## this will get the match list of the summoner based on the conditions we already fixed in the function
 print(matches)
-if len(matches) < 100:
+
+''' I think we could implement this in the function and could make it more efficient but for now we will just use this as it is'''
+if len(matches) < 100:  ## if the number of matches is less than 100 then we will get the match list again but this time we will use the normal draft games as difference
     print('Not enough matches to analyze')
     print('Executing retrieval of match list again but using the normal draft games as difference')
     matches = matches + get_match_list(puuid, shard, api_key, queue_id=400,count = 100 - len(matches))
@@ -49,13 +51,16 @@ if len(matches) < 100:
     matches = matches + get_match_list(puuid, shard, api_key, queue_id=430,count = 100 - len(matches))   
 keys = ['assists','championId','champExperience','deaths','firstTowerKill','inhibitorKills','kills','lane',
         'longestTimeSpentLiving','turretsLost','turretKills','win']
-challenges = ['acesBefore15Minutes', 'bountyGold', 'damagePerMinute', 'firstTurretKilled', 'gameLength', 'kda', 'killParticipation','maxCsAdvantageOnLaneOpponent', 'maxKillDeficit', 'multikills', 'soloKills', 'takedowns', 'teamBaronKills','turretPlatesTaken','turretTakedowns']
+challenges = ['acesBefore15Minutes', 'bountyGold','baronTakedowns', 'damagePerMinute','doubleAces','earlyLaningPhaseGoldExpAdvantage ', 'firstTurretKilled', 'gameLength', 'kda', 'killParticipation','maxCsAdvantageOnLaneOpponent','landSkillShotsEarlyGame ', 'maxKillDeficit','maxLevelLeadLaneOpponent', 'multikills', 'soloKills', 'takedowns', 'teamBaronKills','turretPlatesTaken','turretTakedowns']
 data = []
 for match in tqdm(matches):
     match_detail = get_match_details(match, shard, api_key)
-    participant_details = get_participants_details(match_detail, get_account_info(summoner_name, server, api_key)[1])
+    participant_details,plyr_index = get_participants_details(match_detail, get_account_info(summoner_name, server, api_key)[1])
    # print(participant_details)
+    scores = calculate_game_scores(match_detail['info']['participants'],match)
+    plyr_score = scores[plyr_index]
     pd_df = {key: participant_details[key] for key in keys}
+    print(participant_details)
     pd_challenges = {key: (participant_details['challenges'][key] if key in participant_details['challenges'] else None) for key in challenges}
     pd_df.update(pd_challenges)
     sorted_keys = list(pd_df.keys())
