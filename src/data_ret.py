@@ -17,7 +17,7 @@ def get_account_info(summoner_name, server, api_key):
     puuid = account_info['puuid']
     return account_id, puuid
 
-def get_match_list(puuid, shard, api_key,queue_id=queue_id,count = 100):
+def get_match_list(puuid, shard, api_key,queue_id=queue_id,count = 50):
     match_list_link = 'https://' + shard + '.api.riotgames.com/lol/match/v5/matches/by-puuid/'+ puuid + '/ids' + '?api_key=' + api_key + '&count='+str(count) + '&queue=' + str(queue_id)
     match_list = rq.get(match_list_link).json()
     return match_list
@@ -44,30 +44,32 @@ print(matches)
 if len(matches) < 100:  ## if the number of matches is less than 100 then we will get the match list again but this time we will use the normal draft games as difference
     print('Not enough matches to analyze')
     print('Executing retrieval of match list again but using the normal draft games as difference')
-    matches = matches + get_match_list(puuid, shard, api_key, queue_id=400,count = 100 - len(matches))
+    matches = matches + get_match_list(puuid, shard, api_key, queue_id=400,count = 50 - len(matches))
     if len(matches) < 100:
         print('Not enough matches to analyze')
     print('Executing retrieval of match list again but using the normal blind games as difference')
-    matches = matches + get_match_list(puuid, shard, api_key, queue_id=430,count = 100 - len(matches))   
+    matches = matches + get_match_list(puuid, shard, api_key, queue_id=430,count = 50 - len(matches))   
 keys = ['assists','championId','champExperience','deaths','firstTowerKill','inhibitorKills','kills','lane',
-        'longestTimeSpentLiving','turretsLost','turretKills','win']
+        'longestTimeSpentLiving','turretsLost','turretKills','win','score','score_diff']
 challenges = ['acesBefore15Minutes', 'bountyGold','baronTakedowns', 'damagePerMinute','doubleAces','earlyLaningPhaseGoldExpAdvantage ', 'firstTurretKilled', 'gameLength', 'kda', 'killParticipation','maxCsAdvantageOnLaneOpponent','landSkillShotsEarlyGame ', 'maxKillDeficit','maxLevelLeadLaneOpponent', 'multikills', 'soloKills', 'takedowns', 'teamBaronKills','turretPlatesTaken','turretTakedowns']
 data = []
 for match in tqdm(matches):
     match_detail = get_match_details(match, shard, api_key)
-    participant_details,plyr_index = get_participants_details(match_detail, get_account_info(summoner_name, server, api_key)[1])
-   # print(participant_details)
-    scores = calculate_game_scores(match_detail['info']['participants'],match)
-    plyr_score = scores[plyr_index]
-    pd_df = {key: participant_details[key] for key in keys}
-    print(participant_details)
-    pd_challenges = {key: (participant_details['challenges'][key] if key in participant_details['challenges'] else None) for key in challenges}
-    pd_df.update(pd_challenges)
-    sorted_keys = list(pd_df.keys())
-    sorted_keys.sort()
-    pd_df = {key: pd_df[key] for key in sorted_keys}
-    data.append(pd_df)
+    if match_detail['info']['gameDuration'] > 1380:
+        participant_details,plyr_index = get_participants_details(match_detail, get_account_info(summoner_name, server, api_key)[1])
+        scores,score_diff = calculate_game_scores(match_detail['info']['participants'],match)
+        plyr_score,player_score_diff = scores[plyr_index],score_diff[plyr_index]
+        participant_details['score'] = plyr_score
+        participant_details['score_diff'] = player_score_diff
+        pd_df = {key: participant_details[key] for key in keys}
+        pd_challenges = {key: (participant_details['challenges'][key] if key in participant_details['challenges'] else None) for key in challenges}
+        pd_df.update(pd_challenges)
+        sorted_keys = list(pd_df.keys())
+        sorted_keys.sort()
+        pd_df = {key: pd_df[key] for key in sorted_keys}
+        data.append(pd_df)
 df = pd.DataFrame(data, columns = (keys + challenges).sort())
+print(df.head())
 ## Lets try to insert data into a dataframe by using the above api calls
 ## We will use the pandas library to create a dataframe
 print(df.shape)        ## This will print the shape of the dataframe

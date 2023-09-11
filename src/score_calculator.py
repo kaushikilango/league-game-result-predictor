@@ -19,6 +19,8 @@ def calculate_game_scores(game1,game_id):
     df['csPerMin'] = df['totalMinionsKilled']/df['gameLength']*60
     df['score'] = df['kda'].apply(lambda x: min(x/2.51,1)* 0.27) + df['killParticipation'].apply(lambda x: min(x/0.471,1) * 0.13) + df['damagePerDeath'].apply(lambda x: min(x/3770,1)*0.15) + df['percentageDamage'].apply(lambda x: min(x/0.228,1)*0.15) + df['csPerMin'].apply(lambda x: min(x/6.8,1)*0.10) + df['goldPerMinute'].apply(lambda x: min(x/369.1,1)*0.10) + df['visionScorePerMinute'].apply(lambda x: min(x/0.3,1)*0.10)
     df['score'] = df['score']* 10
-    print(df['score'])
-    return numpy.array(df['score'])
+    score_team1 = df[df['teamId']==100]['score'].sum()
+    score_team2 = df[df['teamId']==200]['score'].sum()
+    df['score_diff'] = df.apply(lambda x: score_team1 - score_team2 if x['teamId']==100 else score_team2 - score_team1, axis=1)
+    return numpy.array(df['score']),numpy.array(df['score_diff'])
 ## Calculating cumulative properties
