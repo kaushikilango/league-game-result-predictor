@@ -1,7 +1,9 @@
 import pandas as pd
+from matplotlib import pyplot as plt
 
-df =  pd.read_csv('data.csv')
-print(df.head())
-df['killParticipation'] = df['killParticipation'].fillna(df['killParticipation'].mean())
-print(df['killParticipation'].mean() * 100)
-print(sum((df['win']) & (df['lane'] == 'JUNGLE')) / sum(df['lane'] == 'JUNGLE') * 100)
+df = pd.read_csv('data.csv')
+df = df.drop(['Unnamed: 0'],axis=1)
+df['score'] = df['score'].apply(lambda x: x*10)
+
+plt.plot(df['score_diff'],df['win'],'ro')
+plt.show()

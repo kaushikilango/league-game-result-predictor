@@ -2,10 +2,11 @@ import requests as rq
 from tqdm import tqdm
 import pandas as pd
 from score_calculator import calculate_game_scores
-api_key = 'RGAPI-5b57ebaf-54c6-4816-8c2c-7cf91eb6f345'
+import time
+api_key = 'RGAPI-4ba43c5f-14a3-41a0-a589-bba18942423b'
 server = 'na1'
 shard = 'americas'
-summoner_name = 'miman'
+summoner_name = 'Cody Sun'
 max_requests = 10 # per time_frequency
 time_frequency = 1 # in seconds
 queue_id = 420  # ranked solo/duo ## 400 is normal draft #430 is blind pick
@@ -17,8 +18,8 @@ def get_account_info(summoner_name, server, api_key):
     puuid = account_info['puuid']
     return account_id, puuid
 
-def get_match_list(puuid, shard, api_key,queue_id=queue_id,count = 50):
-    match_list_link = 'https://' + shard + '.api.riotgames.com/lol/match/v5/matches/by-puuid/'+ puuid + '/ids' + '?api_key=' + api_key + '&count='+str(count) + '&queue=' + str(queue_id)
+def get_match_list(puuid, shard, api_key,queue_id=queue_id,count = 100,start = 0):
+    match_list_link = 'https://' + shard + '.api.riotgames.com/lol/match/v5/matches/by-puuid/'+ puuid + '/ids' + '?api_key=' + api_key + '&count='+str(count) + '&start=' + str(start)
     match_list = rq.get(match_list_link).json()
     return match_list
 
@@ -37,10 +38,12 @@ def get_participants_details(match_details, puuid):
     return player_stats,player_chr
 
 puuid = get_account_info(summoner_name, server, api_key)[1]  ## this will get the puuid of the summoner
-matches = get_match_list(puuid, shard, api_key)   ## this will get the match list of the summoner based on the conditions we already fixed in the function
+matches = []
+for i in range(0,601,100):
+    matches = matches + get_match_list(puuid, shard, api_key)   ## this will get the match list of the summoner based on the conditions we already fixed in the function
 print(matches)
-
-''' I think we could implement this in the function and could make it more efficient but for now we will just use this as it is'''
+'''''
+I think we could implement this in the function and could make it more efficient but for now we will just use this as it is
 if len(matches) < 100:  ## if the number of matches is less than 100 then we will get the match list again but this time we will use the normal draft games as difference
     print('Not enough matches to analyze')
     print('Executing retrieval of match list again but using the normal draft games as difference')
@@ -49,13 +52,20 @@ if len(matches) < 100:  ## if the number of matches is less than 100 then we wil
         print('Not enough matches to analyze')
     print('Executing retrieval of match list again but using the normal blind games as difference')
     matches = matches + get_match_list(puuid, shard, api_key, queue_id=430,count = 50 - len(matches))   
+'''
 keys = ['assists','championId','champExperience','deaths','firstTowerKill','inhibitorKills','kills','lane',
         'longestTimeSpentLiving','turretsLost','turretKills','win','score','score_diff']
 challenges = ['acesBefore15Minutes', 'bountyGold','baronTakedowns', 'damagePerMinute','doubleAces','earlyLaningPhaseGoldExpAdvantage ', 'firstTurretKilled', 'gameLength', 'kda', 'killParticipation','maxCsAdvantageOnLaneOpponent','landSkillShotsEarlyGame ', 'maxKillDeficit','maxLevelLeadLaneOpponent', 'multikills', 'soloKills', 'takedowns', 'teamBaronKills','turretPlatesTaken','turretTakedowns']
 data = []
+count = 0
+total_matches = 0
 for match in tqdm(matches):
     match_detail = get_match_details(match, shard, api_key)
+    count = count + 1
+    if count%80 == 0:
+        time.sleep(120)
     if match_detail['info']['gameDuration'] > 1380:
+        total_matches = total_matches + 1
         participant_details,plyr_index = get_participants_details(match_detail, get_account_info(summoner_name, server, api_key)[1])
         scores,score_diff = calculate_game_scores(match_detail['info']['participants'],match)
         plyr_score,player_score_diff = scores[plyr_index],score_diff[plyr_index]
@@ -68,6 +78,8 @@ for match in tqdm(matches):
         sorted_keys.sort()
         pd_df = {key: pd_df[key] for key in sorted_keys}
         data.append(pd_df)
+print('Total matches retrieved: ',count)
+print('Total matches analyzed: ',total_matches)
 df = pd.DataFrame(data, columns = (keys + challenges).sort())
 print(df.head())
 ## Lets try to insert data into a dataframe by using the above api calls
