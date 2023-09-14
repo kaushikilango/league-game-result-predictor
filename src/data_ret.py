@@ -6,7 +6,7 @@ import time
 api_key = 'RGAPI-4ba43c5f-14a3-41a0-a589-bba18942423b'
 server = 'na1'
 shard = 'americas'
-summoner_name = 'Cody Sun'
+summoner_name = 'yuxin baby'
 max_requests = 10 # per time_frequency
 time_frequency = 1 # in seconds
 queue_id = 420  # ranked solo/duo ## 400 is normal draft #430 is blind pick
@@ -85,4 +85,4 @@ print(df.head())
 ## Lets try to insert data into a dataframe by using the above api calls
 ## We will use the pandas library to create a dataframe
 print(df.shape)        ## This will print the shape of the dataframe
-df.to_csv('data.csv')  ## This will save the dataframe as a csv file
+df.to_csv('src\data\yuxin_baby_data.csv')  ## This will save the dataframe as a csv file
