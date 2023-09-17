@@ -2,15 +2,21 @@ import requests as rq
 from tqdm import tqdm
 import pandas as pd
 from score_calculator import calculate_game_scores
+from team_dets import scrutinize_team
 import time
-api_key = 'RGAPI-08b3125c-c0ff-4c98-845b-e1ef17f4ef7f'
+api_key = 'RGAPI-5792b231-e1db-40f7-9e6a-d6f7ddfbb67c'
 server = 'na1'
 shard = 'americas'
-summoner_name = 'twtv daption'
+summoner_name = 'Big dacko'
 max_requests = 10 # per time_frequency
 time_frequency = 1 # in seconds
 queue_id = 420  # ranked solo/duo ## 400 is normal draft #430 is blind pick
-
+challenger = ['Cody Sun','Amazo','Fishlord','Yuxin Baby','TWTV Daption']
+grandm = {'player': ['Bid Decko','AXSOLUTE','OnlyOnesWhoKnow','Shockey','Young7'], 'elo' : 'grandmaster'}
+master = {'players': ['GreasyBigMac','Alson','Miraa','Greed','HunterxNh'], 'elo': 'master'}
+emerald = {'players': ['Octonaut','Forced Consent','poph55','enarwis','JAJA A'], 'elo': 'emerald'}
+platinum = {'players': ['Hahn','Egyptian Pyke','Yuumi Boom','KumakoDX','iki11noob'], 'elo': 'platinum'}
+gold = {'players': ['Rhinocesaurus','NAYoungBeuwolf','SuperNinja333','no peroxide','bronze v rules'], 'elo': 'gold'}
 def get_account_info(summoner_name, server, api_key):
     account_link = 'https://' + server + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + summoner_name + '?api_key=' + api_key
     account_info = rq.get(account_link).json()
@@ -42,20 +48,11 @@ matches = []
 for i in range(0,601,100):
     matches = matches + get_match_list(puuid, shard, api_key)   ## this will get the match list of the summoner based on the conditions we already fixed in the function
 print(matches)
-'''''
-I think we could implement this in the function and could make it more efficient but for now we will just use this as it is
-if len(matches) < 100:  ## if the number of matches is less than 100 then we will get the match list again but this time we will use the normal draft games as difference
-    print('Not enough matches to analyze')
-    print('Executing retrieval of match list again but using the normal draft games as difference')
-    matches = matches + get_match_list(puuid, shard, api_key, queue_id=400,count = 50 - len(matches))
-    if len(matches) < 100:
-        print('Not enough matches to analyze')
-    print('Executing retrieval of match list again but using the normal blind games as difference')
-    matches = matches + get_match_list(puuid, shard, api_key, queue_id=430,count = 50 - len(matches))   
-'''
 keys = ['assists','championId','champExperience','deaths','firstTowerKill','inhibitorKills','kills','lane',
         'longestTimeSpentLiving','turretsLost','turretKills','win','score','score_diff']
-challenges = ['acesBefore15Minutes', 'bountyGold','baronTakedowns', 'damagePerMinute','doubleAces','earlyLaningPhaseGoldExpAdvantage ', 'firstTurretKilled', 'gameLength', 'kda', 'killParticipation','maxCsAdvantageOnLaneOpponent','landSkillShotsEarlyGame ', 'maxKillDeficit','maxLevelLeadLaneOpponent', 'multikills', 'soloKills', 'takedowns', 'teamBaronKills','turretPlatesTaken','turretTakedowns']
+team_dt = ['ally_tower_kills','enemy_tower_kills','ally_inhibitor_kills','enemy_inhibitor_kills',
+        'ally_baron_kills','enemy_baron_kills','ally_dragon_kills','enemy_dragon_kills',
+        'ally_rift_kills','enemy_rift_kills','ally_kills','enemy_kills']
 data = []
 count = 0
 total_matches = 0
@@ -68,21 +65,22 @@ for match in tqdm(matches):
         total_matches = total_matches + 1
         participant_details,plyr_index = get_participants_details(match_detail, get_account_info(summoner_name, server, api_key)[1])
         scores,score_diff = calculate_game_scores(match_detail['info']['participants'],match)
+        team_data = scrutinize_team(match_detail['info']['teams'],participant_details['teamId'])
         plyr_score,player_score_diff = scores[plyr_index],score_diff[plyr_index]
         participant_details['score'] = plyr_score
         participant_details['score_diff'] = player_score_diff
         pd_df = {key: participant_details[key] for key in keys}
-        pd_challenges = {key: (participant_details['challenges'][key] if key in participant_details['challenges'] else None) for key in challenges}
-        pd_df.update(pd_challenges)
+        pd_df.update(team_data)
         sorted_keys = list(pd_df.keys())
         sorted_keys.sort()
         pd_df = {key: pd_df[key] for key in sorted_keys}
         data.append(pd_df)
 print('Total matches retrieved: ',count)
 print('Total matches analyzed: ',total_matches)
-df = pd.DataFrame(data, columns = (keys + challenges).sort())
+df = pd.DataFrame(data, columns = (keys + team_dt).sort())
+df = df[team_dt + ['score_diff','win']]
 print(df.head())
 ## Lets try to insert data into a dataframe by using the above api calls
 ## We will use the pandas library to create a dataframe
 print(df.shape)        ## This will print the shape of the dataframe
-df.to_csv('src/data/twtv_daption_data.csv')  ## This will save the dataframe as a csv file
+df.to_csv('src/data/big_dacko_data.csv')  ## This will save the dataframe as a csv file
