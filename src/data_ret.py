@@ -7,16 +7,16 @@ import time
 api_key = 'RGAPI-5792b231-e1db-40f7-9e6a-d6f7ddfbb67c'
 server = 'na1'
 shard = 'americas'
-summoner_name = 'Miraa'
+summoner_name = 'Forced Consent'
 max_requests = 10 # per time_frequency
 time_frequency = 1 # in seconds
 queue_id = 420  # ranked solo/duo ## 400 is normal draft #430 is blind pick
-challenger = ['Cody Sun','Amazo','Fishlord','Yuxin Baby','TWTV Daption']
-grandm = {'player': ['Big Dacko','AXSOLUTE','OnlyOnesWhoKnow','Shockey','Young7'], 'elo' : 'grandmaster'}
-master = {'players': ['GreasyBigMac','Alson','Miraa','Greed','HunterxNh'], 'elo': 'master'}
-emerald = {'players': ['Octonaut','Forced Consent','poph55','enarwis','JAJA A'], 'elo': 'emerald'}
-platinum = {'players': ['Hahn','Egyptian Pyke','Yuumi Boom','KumakoDX','iki11noob'], 'elo': 'platinum'}
-gold = {'players': ['Rhinocesaurus','NAYoungBeuwolf','SuperNinja333','no peroxide','bronze v rules'], 'elo': 'gold'}
+players = [[['Cody Sun','Amazo','Fishlord','Yuxin Baby','TWTV Daption']],
+[{'player': ['Big Dacko','AXSOLUTE','OnlyOnesWhoKnow','Shockey','Young7'], 'elo' : 'grandmaster'}],
+[{'players': ['sob','Alson','Miraa','Greed','HunterxNh'], 'elo': 'master'}],
+[{'players': ['Octonaut','Forced Consent','poph55','enarwis','JAJA A'], 'elo': 'emerald'}],
+[{'players': ['Hahn','Egyptian Pyke','Yuumi Boom','KumakoDX','iki11noob'], 'elo': 'platinum'}],
+[{'players': ['Rhinocesaurus','NAYoungBeuwolf','SuperNinja333','no peroxide','bronze v rules'], 'elo': 'gold'}]]
 def get_account_info(summoner_name, server, api_key):
     account_link = 'https://' + server + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + summoner_name + '?api_key=' + api_key
     account_info = rq.get(account_link).json()
@@ -83,4 +83,4 @@ print(df.head())
 ## Lets try to insert data into a dataframe by using the above api calls
 ## We will use the pandas library to create a dataframe
 print(df.shape)        ## This will print the shape of the dataframe
-df.to_csv('src/data/Miraa_data.csv')  ## This will save the dataframe as a csv file
+df.to_csv('src/data/Forced_Consent.csv')  ## This will save the dataframe as a csv file
