@@ -4,10 +4,10 @@ import pandas as pd
 from score_calculator import calculate_game_scores
 from team_dets import scrutinize_team
 import time
-api_key = 'RGAPI-5792b231-e1db-40f7-9e6a-d6f7ddfbb67c'
+api_key = 'RGAPI-337fe798-7e49-45ac-bc17-709096d45fab'
 server = 'na1'
 shard = 'americas'
-summoner_name = 'Forced Consent'
+summoner_name = 'Egyptian Pyke'
 max_requests = 10 # per time_frequency
 time_frequency = 1 # in seconds
 queue_id = 420  # ranked solo/duo ## 400 is normal draft #430 is blind pick
@@ -83,4 +83,5 @@ print(df.head())
 ## Lets try to insert data into a dataframe by using the above api calls
 ## We will use the pandas library to create a dataframe
 print(df.shape)        ## This will print the shape of the dataframe
-df.to_csv('src/data/Forced_Consent.csv')  ## This will save the dataframe as a csv file
+
+df.to_csv('src/data/Egyptian_Pyke.csv')  ## This will save the dataframe as a csv file
