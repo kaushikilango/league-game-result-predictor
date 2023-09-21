@@ -1,0 +1,11 @@
+,ally_tower_kills,enemy_tower_kills,ally_inhibitor_kills,enemy_inhibitor_kills,ally_baron_kills,enemy_baron_kills,ally_dragon_kills,enemy_dragon_kills,ally_rift_kills,enemy_rift_kills,ally_kills,enemy_kills,score_diff,win,elo
+0,1,9,0,0,0,1,0,4,1,1,20,23,-1.138974948872736,False,PLATINUM
+1,7,9,1,1,2,1,1,5,1,1,35,40,-2.828487619933938,False,PLATINUM
+2,5,7,1,1,0,2,3,2,2,0,39,36,-0.15326641645528838,False,PLATINUM
+3,6,3,0,0,1,0,3,1,1,1,35,24,8.578520669355441,True,PLATINUM
+4,2,8,0,1,0,1,0,3,0,2,18,45,-16.24149538846018,False,PLATINUM
+5,9,5,1,0,0,1,3,1,1,1,38,23,5.989442718973379,True,PLATINUM
+6,2,4,1,2,0,0,0,0,0,0,57,89,-5.65308112866925,False,PLATINUM
+7,4,4,3,1,0,0,0,0,0,0,64,64,0.11615352819742952,False,PLATINUM
+8,3,6,0,1,0,1,0,4,2,0,11,22,-8.751250882222308,False,PLATINUM
+9,4,4,1,1,0,0,0,0,0,0,53,64,-2.3463377010463446,True,PLATINUM

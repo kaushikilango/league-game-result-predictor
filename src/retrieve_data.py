@@ -6,7 +6,7 @@ from team_dets import scrutinize_team
 import time
 from data_ret import get_account_info,get_match_list,get_match_details,get_participants_details
 import ast
-api_key = 'RGAPI-337fe798-7e49-45ac-bc17-709096d45fab'
+api_key = 'RGAPI-550138ea-d9a7-4801-9be3-af687e027e16'
 server = 'na1'
 shard = 'americas'
 summoner_name = 'Savage Buffalo1'
@@ -15,7 +15,7 @@ time_frequency = 1 # in seconds
 queue_id = 420  # ranked solo/duo ## 400 is normal draft #430 is blind pick
 
 player_pair = []
-with open('src/data/raw_data.txt','r') as f:
+with open('data/leader_data.txt','r') as f:
     player1 = f.readlines()
     for i in player1:
         i = i.replace('(' ,'')
@@ -72,8 +72,8 @@ for i,k in player_pair:
     elo = [e] * df.shape[0]
     df['elo'] = elo
     print('Process ended at ',time.strftime("%H:%M:%S", time.localtime()))
-    df.to_csv('src/data/' + summoner_name.replace(' ','_') + '.csv')  ## This will save the dataframe as a csv file'''
-    df.to_csv('src/data/master_data.csv',mode='a',index=False,header=False)
+    df.to_csv('data/' + summoner_name.replace(' ','_') + '.csv')  ## This will save the dataframe as a csv file'''
+    df.to_csv('data/master_data.csv',mode='a',index=False,header=False)
     time.sleep(60)
 
 

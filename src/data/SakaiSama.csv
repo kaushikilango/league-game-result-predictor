@@ -1,0 +1,13 @@
+,ally_tower_kills,enemy_tower_kills,ally_inhibitor_kills,enemy_inhibitor_kills,ally_baron_kills,enemy_baron_kills,ally_dragon_kills,enemy_dragon_kills,ally_rift_kills,enemy_rift_kills,ally_kills,enemy_kills,score_diff,win,elo
+0,11,2,3,0,1,1,5,0,1,1,47,25,8.657983939267965,True,GOLD
+1,2,9,0,1,0,1,3,2,1,1,33,45,-6.036308204384717,False,GOLD
+2,1,4,0,1,0,0,0,0,0,0,43,54,-1.7312158399197486,False,GOLD
+3,11,6,2,0,2,0,5,0,1,1,35,21,4.218694408423886,True,GOLD
+4,9,2,1,0,0,0,2,1,0,2,20,29,-2.6652827040937055,True,GOLD
+5,11,5,6,1,1,2,4,1,2,0,43,44,-1.5706782236156585,True,GOLD
+6,4,1,2,0,0,0,0,0,0,0,49,54,-2.166206691791608,True,GOLD
+7,3,10,0,2,0,1,0,3,0,2,30,44,-3.880060481915727,False,GOLD
+8,1,7,0,1,0,1,0,3,1,1,12,28,-11.454017836599945,False,GOLD
+9,4,2,2,1,0,0,0,0,0,0,91,86,-0.1168177617685302,True,GOLD
+10,2,2,2,1,0,0,0,0,0,0,84,72,1.1881127556936377,True,GOLD
+11,1,4,0,3,0,0,0,0,0,0,51,70,-5.1078780656883325,False,GOLD
