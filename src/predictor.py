@@ -23,6 +23,22 @@ if __name__ == '__main__':
     d.columns = DATA_COLUMNS
     d = randomizer(d)
     print(d.head())
-
+    print('The current shape of the dataset is: ',d.shape)
     for i in ['IRON','BRONZE','SILVER','GOLD','PLATINUM','DIAMOND','MASTER','GRANDMASTER','CHALLENGER']:
         print('The percentage of ',i.lower(),' players in the dataset is: ',get_percentage(d,i),'%')
+    print('Checking for duplicates in the dataset...')
+    print(f'There are {d.duplicated().sum()} duplicates in the dataset')
+    print('Removing duplicates...')
+    d.drop_duplicates(inplace=True)
+    print('Checking for duplicates in the dataset...')
+    print(f'There are {d.duplicated().sum()} duplicates in the dataset')
+    print('The current shape of the dataset is: ',d.shape)
+    print('Checking for null values in the dataset...')
+    print(f'There are {d.isnull().sum().sum()} null values in the dataset')
+    print('Removing null values...')
+    d.dropna(inplace=True)
+    print('Checking for null values in the dataset...')
+    print(f'There are {d.isnull().sum().sum()} null values in the dataset')
+    print('The current shape of the dataset is: ',d.shape)
+    print('Checking for outliers in the dataset...')
+    

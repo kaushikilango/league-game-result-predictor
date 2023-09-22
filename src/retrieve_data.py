@@ -6,7 +6,7 @@ from team_dets import scrutinize_team
 import time
 from data_ret import get_account_info,get_match_list,get_match_details,get_participants_details
 import ast
-api_key = 'RGAPI-550138ea-d9a7-4801-9be3-af687e027e16'
+api_key = 'RGAPI-099394f9-dffa-4d40-a477-9aa040095e0f'
 server = 'na1'
 shard = 'americas'
 summoner_name = 'Savage Buffalo1'
