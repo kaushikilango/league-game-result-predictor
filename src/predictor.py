@@ -1,12 +1,11 @@
 import pandas as pd
 import numpy as np
 import scipy.stats as stats
+from sklearn.model_selection import train_test_split
 
-DATA_COLUMNS = ['ally_tower_kills','enemy_tower_kills','ally_inhibitor_kills','enemy_inhibitor_kills','ally_baron_kills','enemy_baron_kills','ally_dragon_kills','enemy_dragon_kills',
-                'ally_rift_kills','enemy_rift_kills','ally_kills','enemy_kills','score_diff','win','rank']
 
 def get_data():
-    df = pd.read_csv('data\master_data.csv')
+    df = pd.read_csv("C:\Git\league-game-result-predictor\src\data\master_data.csv")
     return df
 
 def randomizer(df):
@@ -20,7 +19,6 @@ def get_percentage(df,rank):
 
 if __name__ == '__main__':
     d = get_data()
-    d.columns = DATA_COLUMNS
     d = randomizer(d)
     print(d.head())
     print('The current shape of the dataset is: ',d.shape)
@@ -41,4 +39,16 @@ if __name__ == '__main__':
     print(f'There are {d.isnull().sum().sum()} null values in the dataset')
     print('The current shape of the dataset is: ',d.shape)
     print('Checking for outliers in the dataset...')
+    X = d.drop('win',axis=1)
+    y = d['win']
+    X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+    print('The current shape of the feature training set is: ',X_train.shape)
+    print('The current shape of the feature test set is: ',X_test.shape)
+    print('The current shape of the label training set is: ',y_train.shape)
+    print('The current shape of the label test set is: ',y_test.shape)
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.preprocessing import OneHotEncoder
+    encoder = OneHotEncoder()
+    scaler = StandardScaler()
+    encoder.fit(X_train[['rank']])
     
