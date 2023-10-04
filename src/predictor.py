@@ -17,6 +17,10 @@ def get_percentage(df,rank):
     f = len(df[(df['rank'] == rank)]) / len(df) * 100
     return f
 
+def categorize_rank(df):
+    rank_to_num = {'CHALLENGER': 9, 'GRANDMASTER': 8, 'MASTER': 7, 'DIAMOND': 6, 'PLATINUM': 5, 'GOLD': 4, 'SILVER': 3, 'BRONZE': 2, 'IRON': 1}
+    df['rank'] = df['rank'].map(rank_to_num)
+    return df
 if __name__ == '__main__':
     d = get_data()
     d = randomizer(d)
@@ -39,7 +43,10 @@ if __name__ == '__main__':
     print(f'There are {d.isnull().sum().sum()} null values in the dataset')
     print('The current shape of the dataset is: ',d.shape)
     print('Checking for outliers in the dataset...')
-    X = d.drop('win',axis=1)
+    X = d.drop(['_id','win'],axis=1)
+    rank_onehot = pd.get_dummies(X['rank']).astype(int)
+    X = pd.concat([X,rank_onehot],axis=1)
+    X.drop(['rank'],axis=1,inplace=True)
     y = d['win']
     X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=42)
     print('The current shape of the feature training set is: ',X_train.shape)
@@ -47,8 +54,21 @@ if __name__ == '__main__':
     print('The current shape of the label training set is: ',y_train.shape)
     print('The current shape of the label test set is: ',y_test.shape)
     from sklearn.preprocessing import StandardScaler
-    from sklearn.preprocessing import OneHotEncoder
-    encoder = OneHotEncoder()
+    print(X_train.head())
     scaler = StandardScaler()
-    encoder.fit(X_train[['rank']])
+
+    from sklearn.linear_model import LogisticRegression
+    regressor = LogisticRegression()
+    regressor.fit(X_train,y_train)
+    y_pred = regressor.predict(X_test)
+    print(y_pred)
+    print(y_test)
+    from sklearn.metrics import accuracy_score,classification_report,confusion_matrix
+    acc = accuracy_score(y_test,y_pred)
+    cls_report = classification_report(y_test,y_pred)
+    con_mat = confusion_matrix(y_test,y_pred)
+    print('The accuracy of the model is: ',acc)
+    print('The classification report of the model is: ',cls_report)
+    print('The confusion matrix of the model is: ',con_mat)
+
     
